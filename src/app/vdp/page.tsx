@@ -1,0 +1,483 @@
+
+import { Calendar } from "@/components/ui/calendar"
+import { Share2, Heart, ChevronRight, MapPin, Phone, Info } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import CarFeatures from "@/components/car-features"
+import ImageGallery from "@/components/image-gallery"
+import SimilarCars from "@/components/similar-cars"
+import FinancingCalculator from "@/components/financing-calculator"
+import Specifications from "@/components/specifications"
+import Header from "@/components/header"
+import Footer from "@/components/footer"
+
+export default function VehicleDetailPage() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-8">
+          {/* Breadcrumb */}
+          <div className="flex items-center text-sm text-muted-foreground mb-4">
+            <span>Sedan FWD</span>
+          </div>
+
+          {/* Car Title */}
+          <div className="flex justify-between items-start mb-6">
+            <h1 className="text-3xl font-bold">2025 Nissan Versa 1.6 SR</h1>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <Heart className="h-4 w-4" />
+                Save
+              </Button>
+            </div>
+          </div>
+
+          {/* Key Features */}
+          <div className="flex flex-wrap gap-4 mb-6">
+            <Badge variant="outline" className="rounded-full px-4 py-1 flex items-center gap-2">
+              <span className="bg-gray-100 p-1 rounded-full">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 4.5L14.5 9.5L20 10.5L16 14.5L17 20L12 17.5L7 20L8 14.5L4 10.5L9.5 9.5L12 4.5Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              32 MPG
+            </Badge>
+            <Badge variant="outline" className="rounded-full px-4 py-1 flex items-center gap-2">
+              <span className="bg-gray-100 p-1 rounded-full">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 4.5V19.5M12 4.5L7 9.5M12 4.5L17 9.5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              900 miles
+            </Badge>
+            <Badge variant="outline" className="rounded-full px-4 py-1 flex items-center gap-2">
+              <span className="bg-gray-100 p-1 rounded-full">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M16 16L19 19M18 12H22M16 8L19 5M12 6V2M8 8L5 5M6 12H2M8 16L5 19M12 18V22"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              Automatic
+            </Badge>
+            <Badge variant="outline" className="rounded-full px-4 py-1 flex items-center gap-2">
+              <span className="bg-gray-100 p-1 rounded-full">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M18 20C18 16.6863 15.3137 14 12 14C8.68629 14 6 16.6863 6 20"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              Dealer
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Images and Details */}
+            <div className="lg:col-span-2">
+              <ImageGallery />
+
+              <div className="mt-8">
+                <h2 className="text-xl font-bold mb-4">Details</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Stock Type</p>
+                        <p className="text-sm">New</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">VIN</p>
+                        <p className="text-sm">3N1CN8EV5NL458902</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Make & Model</p>
+                        <p className="text-sm">Nissan Versa</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Trim</p>
+                        <p className="text-sm">1.6 SR</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Doors</p>
+                        <p className="text-sm">4-door</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">MPG City</p>
+                        <p className="text-sm">32</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">MPG Highway</p>
+                        <p className="text-sm">40</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Year</p>
+                        <p className="text-sm">2025</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Mileage</p>
+                        <p className="text-sm">900 miles</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Fuel Type</p>
+                        <p className="text-sm">Petrol</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Transmission</p>
+                        <p className="text-sm">CVT</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Drive Type</p>
+                        <p className="text-sm">Front Wheel Drive</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Exterior Color</p>
+                        <p className="text-sm">Scarlet Ember Tintcoat</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 p-1 rounded-full">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Interior Color</p>
+                        <p className="text-sm">Sport</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <h2 className="text-xl font-bold mb-4">Description</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  2025 Nissan Versa 1.6 SR Scarlet Ember Tintcoat 1.6L DOHC 16V 4-Cylinder 122HP MPI FWD CVT 32/40
+                  City/Highway MPG 17" Aluminum Alloy Wheels, 6 Speakers, Air Conditioning, Alloy wheels, AM/FM radio:
+                  SiriusXM, Apple CarPlay/Android Auto, Auto High-beam Headlights, Automatic temperature control, Blind
+                  Spot Warning, Brake assist, Bumpers: body-color, Cargo Blocks, Carpeted Floor Mats, Chrome Door
+                  Handles, Chrome Trunk Accent, Driver door bin, Driver vanity mirror, Dual front impact airbags, Dual
+                  front side impact airbags, Electronic Stability Control, Exterior Parking Camera, Four wheel
+                  independent suspension, Fully automatic headlights, Heated door mirrors, Heated Front Bucket Seats,
+                  Heated front seats, Illuminated entry, Knee airbag, Leather steering wheel, Low tire pressure warning,
+                  Outside temperature display, Panic alarm, Power door mirrors, Power steering, Power windows, Radio
+                  data system, Rear window defroster, Remote keyless entry, Security system, Speed control,
+                  Speed-sensing steering, Split folding rear seat, Spoiler, Steering wheel mounted audio controls,
+                  Tachometer, Telescoping steering wheel, Tilt steering wheel, Traction control, Trip computer, Variably
+                  intermittent wipers.
+                </p>
+                <Button variant="link" className="mt-2 p-0 h-auto text-sm font-medium">
+                  + Show More
+                </Button>
+              </div>
+
+              <div className="mt-8">
+                <Button variant="outline" className="w-full py-6 text-base">
+                  <Calendar className="h-5 w-5 mr-2" />
+                  Schedule Test Drive
+                </Button>
+              </div>
+
+              <div className="mt-8">
+                <h2 className="text-xl font-bold mb-4">Reason to love this Nissan 1.6 SR</h2>
+                <CarFeatures />
+              </div>
+
+              <div className="mt-8">
+                <h2 className="text-xl font-bold mb-4">Financing Calculator</h2>
+                <FinancingCalculator />
+              </div>
+
+              <div className="mt-8">
+                <h2 className="text-xl font-bold mb-4">Specifications</h2>
+                <Specifications />
+              </div>
+            </div>
+
+            {/* Right Column - Price and Dealer Info */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-4 space-y-6">
+                <div className="border rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-sm font-medium">Sale Price</h3>
+                    <div className="text-2xl font-bold">$23,190</div>
+                  </div>
+                  <div className="flex justify-between items-center text-sm mb-2">
+                    <span className="text-muted-foreground">MSRP</span>
+                    <span className="line-through">$24,090</span>
+                  </div>
+                  <Button variant="link" className="p-0 h-auto text-sm font-medium flex items-center">
+                    See Pricing Details
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+
+                  <div className="mt-4">
+                    <Button variant="destructive" className="w-full py-6 text-base">
+                      <Info className="h-5 w-5 mr-2" />
+                      Visit us today! Only 3 left at this price
+                    </Button>
+                  </div>
+
+                  <div className="mt-4 border rounded-lg p-4">
+                    <div className="flex items-center mb-2">
+                      <h3 className="text-base font-bold">Tonkin Wilsonville Nissan</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4">26700 SW 95th Ave, Wilsonville</p>
+                    <div className="flex flex-col gap-2">
+                      <Button variant="outline" className="w-full justify-start">
+                        <MapPin className="h-4 w-4 mr-2" />
+                        Get Directions
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start">
+                        <Phone className="h-4 w-4 mr-2" />
+                        503-222-2277
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <Button className="w-full py-6 text-base">Confirm Availability</Button>
+                  </div>
+
+                  <div className="mt-4">
+                    <Button variant="outline" className="w-full py-6 text-base">
+                      Estimate My Payment
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+
+                  <div className="mt-4">
+                    <Button variant="link" className="p-0 h-auto text-sm font-medium flex items-center">
+                      View all stock at this dealer
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-16">
+            <h2 className="text-2xl font-bold mb-6 flex justify-between items-center">
+              You May Also Like
+              <Button variant="link" className="text-sm font-medium flex items-center">
+                View All
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </h2>
+            <SimilarCars />
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  )
+}
