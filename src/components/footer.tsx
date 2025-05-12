@@ -1,12 +1,12 @@
 import Link from "next/link"
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react"
+import { Facebook, Twitter, Instagram, Linkedin, Play, Apple } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0F172A] text-white">
-      <div className="container mx-auto px-4 py-12">
+    <footer className="bg-[#0F172A] text-white" style={{padding: "0 150px", marginTop: "-80px", zIndex: "-1"}}>
+      <div className="container mx-auto px-4 py-12" style={{paddingTop: "150px"}}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <div>
             <h2 className="text-xl font-bold mb-4">Dealer Name</h2>
@@ -18,7 +18,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8 border-t border-[#334155]">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 py-8 border-t border-[#334155]">
           <div>
             <h3 className="font-bold mb-4">Company</h3>
             <ul className="space-y-2">
@@ -169,27 +169,31 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+          <div>
+            <h3 className="font-bold mb-4">Our Mobile App</h3>
+            <div className="flex gap-4 mb-6">
+              <Play className="w-6 h-6" />
+              <Apple className="w-6 h-6" />
+            </div>
+            <h3 className="font-bold mb-4">Connect With Us</h3>
+            <div className="flex gap-4">
+              <Link href="#" className="text-gray-400 hover:text-white">
+                <Facebook className="h-5 w-5" />
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-white">
+                <Twitter className="h-5 w-5" />
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-white">
+                <Instagram className="h-5 w-5" />
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-white">
+                <Linkedin className="h-5 w-5" />
+              </Link>
+            </div>
+          </div>
         </div>
-
         <div className="pt-8 border-t border-[#334155]">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <h3 className="font-bold mb-4">Connect With Us</h3>
-              <div className="flex gap-4">
-                <Link href="#" className="text-gray-400 hover:text-white">
-                  <Facebook className="h-5 w-5" />
-                </Link>
-                <Link href="#" className="text-gray-400 hover:text-white">
-                  <Twitter className="h-5 w-5" />
-                </Link>
-                <Link href="#" className="text-gray-400 hover:text-white">
-                  <Instagram className="h-5 w-5" />
-                </Link>
-                <Link href="#" className="text-gray-400 hover:text-white">
-                  <Linkedin className="h-5 w-5" />
-                </Link>
-              </div>
-            </div>
             <div className="text-gray-400 text-sm">© 2023 Dealerz.com. All rights reserved.</div>
             <div className="flex gap-4 mt-4 md:mt-0">
               <Link href="#" className="text-gray-400 hover:text-white text-sm">
@@ -201,6 +205,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
+
       </div>
     </footer>
   )

@@ -14,7 +14,7 @@ export default function Home() {
           <Link href="/" className="font-medium">
             Home
           </Link>
-          <Link href="/sdp" className="font-medium">
+          <Link href="/srp" className="font-medium">
             Inventory
           </Link>
           <Link href="/blog" className="font-medium">
@@ -44,7 +44,7 @@ export default function Home() {
             Browse through our extensive collection of premium vehicles and find the perfect match for your lifestyle.
           </p>
           <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <Link href="/sdp">
+            <Link href="/srp">
               <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-black">
                 Browse Inventory
               </Button>
@@ -85,7 +85,7 @@ export default function Home() {
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Find Your Dream Car?</h2>
           <p className="text-xl mb-8">Start browsing our inventory today!</p>
-          <Link href="/sdp">
+          <Link href="/srp">
             <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-black">
               View Inventory
             </Button>
