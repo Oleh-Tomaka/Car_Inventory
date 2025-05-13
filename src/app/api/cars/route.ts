@@ -5,61 +5,127 @@ import { parse } from 'csv-parse/sync';
 
 export async function GET(request: Request) {
   try {
-    // Read the CSV file
-    const csvFilePath = path.join(process.cwd(), 'public', 'data.csv');
-    const fileContent = fs.readFileSync(csvFilePath, 'utf-8');
-
-    // Parse CSV data
-    const records = parse(fileContent, {
-      columns: true,
-      skip_empty_lines: true,
-    });
-
-    // Get query parameters
     const { searchParams } = new URL(request.url);
     const make = searchParams.get('make');
-    const model = searchParams.get('model');
-    const year = searchParams.get('year');
+    const years = searchParams.getAll('years');
+    const models = searchParams.getAll('models');
+    const bodyStyles = searchParams.getAll('bodyStyles');
+    const fuelTypes = searchParams.getAll('fuelTypes');
+    const drivetrains = searchParams.getAll('drivetrains');
+    const transmissions = searchParams.getAll('transmissions');
+    const engines = searchParams.getAll('engines');
+    const showInTransit = searchParams.get('showInTransit') === 'true';
     const priceMin = searchParams.get('priceMin');
     const priceMax = searchParams.get('priceMax');
+    const conditions = searchParams.getAll('conditions');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '9');
 
-    // Filter records based on query parameters
-    let filteredRecords = records;
-    if (make) {
-      filteredRecords = filteredRecords.filter((record: any) => 
-        record.Make.toLowerCase() === make.toLowerCase()
-      );
-    }
-    if (model) {
-      filteredRecords = filteredRecords.filter((record: any) => 
-        record.Model.toLowerCase() === model.toLowerCase()
-      );
-    }
-    if (year) {
-      filteredRecords = filteredRecords.filter((record: any) => 
-        record.Year === year
-      );
-    }
-    if (priceMin) {
-      filteredRecords = filteredRecords.filter((record: any) => 
-        parseInt(record.Price) >= parseInt(priceMin)
-      );
-    }
-    if (priceMax) {
-      filteredRecords = filteredRecords.filter((record: any) => 
-        parseInt(record.Price) <= parseInt(priceMax)
-      );
-    }
+    // Read and parse CSV file
+    const filePath = path.join(process.cwd(), 'public', 'data.csv');
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const records = parse(fileContent, {
+      columns: true,
+      skip_empty_lines: true
+    });
+
+    // Helper function to get top N most frequent items
+    const getTopItems = (items: Record<string, number>, limit: number = 5) => {
+      return Object.entries(items)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, limit)
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {} as Record<string, number>);
+    };
+
+    // Calculate all filter counts
+    const filterCounts = {
+      condition: {
+        new: records.filter((record: any) => record['New/Used'] === 'N').length,
+        preOwned: records.filter((record: any) => record['New/Used'] === 'U').length,
+        certified: records.filter((record: any) => record['Certified'] === 'Yes').length,
+      },
+      year: getTopItems(records.reduce((acc: Record<string, number>, record: any) => {
+        acc[record.Year] = (acc[record.Year] || 0) + 1;
+        return acc;
+      }, {}), 4),
+      make: getTopItems(records.reduce((acc: Record<string, number>, record: any) => {
+        acc[record.Make] = (acc[record.Make] || 0) + 1;
+        return acc;
+      }, {}), 5),
+      model: getTopItems(records.reduce((acc: Record<string, number>, record: any) => {
+        acc[record.Model] = (acc[record.Model] || 0) + 1;
+        return acc;
+      }, {}), 5),
+      bodyStyle: getTopItems(records.reduce((acc: Record<string, number>, record: any) => {
+        acc[record.Body] = (acc[record.Body] || 0) + 1;
+        return acc;
+      }, {}), 5),
+      fuelType: getTopItems(records.reduce((acc: Record<string, number>, record: any) => {
+        acc[record['Fuel']] = (acc[record['Fuel']] || 0) + 1;
+        return acc;
+      }, {}), 5),
+      drivetrain: getTopItems(records.reduce((acc: Record<string, number>, record: any) => {
+        acc[record['Drivetrain Desc']] = (acc[record['Drivetrain Desc']] || 0) + 1;
+        return acc;
+      }, {}), 5),
+      transmission: getTopItems(records.reduce((acc: Record<string, number>, record: any) => {
+        acc[record['Transmission']] = (acc[record['Transmission']] || 0) + 1;
+        return acc;
+      }, {}), 5),
+      engine: getTopItems(records.reduce((acc: Record<string, number>, record: any) => {
+        acc[record['Engine']] = (acc[record['Engine']] || 0) + 1;
+        return acc;
+      }, {}), 5),
+    };
+
+    // Apply filters
+    let filteredRecords = records.filter((record: any) => {
+      if (make && record.Make.toLowerCase() !== make.toLowerCase()) return false;
+      if (years.length > 0 && !years.includes(record.Year)) return false;
+      if (models.length > 0 && !models.includes(record.Model)) return false;
+      if (bodyStyles.length > 0 && !bodyStyles.includes(record.Body)) return false;
+      if (fuelTypes.length > 0 && !fuelTypes.includes(record['Fuel'])) return false;
+      if (drivetrains.length > 0 && !drivetrains.includes(record['Drivetrain Desc'])) return false;
+      if (transmissions.length > 0 && !transmissions.includes(record['Transmission'])) return false;
+      if (engines.length > 0 && !engines.includes(record['Engine'])) return false;
+      if (showInTransit && !record['Tags']?.includes('In-Transit')) return false;
+      if (priceMin && parseInt(record.Price) < parseInt(priceMin)) return false;
+      if (priceMax && parseInt(record.Price) > parseInt(priceMax)) return false;
+      
+      // Apply condition filters
+      if (conditions.length > 0) {
+        const isNew = conditions.includes('new') && record['New/Used'] === 'N';
+        const isPreOwned = conditions.includes('pre-owned') && record['New/Used'] === 'U';
+        const isCertified = conditions.includes('certified') && record['Certified'] === 'Yes';
+        
+        if (!isNew && !isPreOwned && !isCertified) return false;
+      }
+      
+      return true;
+    });
+
+    // Calculate pagination
+    const total = filteredRecords.length;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedRecords = filteredRecords.slice(startIndex, endIndex);
 
     return NextResponse.json({
       success: true,
-      data: filteredRecords,
-      total: filteredRecords.length
+      data: paginatedRecords,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      filterCounts
     });
   } catch (error) {
-    console.error('Error processing CSV data:', error);
+    console.error('Error processing request:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to process car data' },
+      { success: false, error: 'Failed to process request' },
       { status: 500 }
     );
   }
