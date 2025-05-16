@@ -110,7 +110,7 @@ export default function Header() {
 
       {/* Desktop View */}
       <div className="hidden my-2 md:flex md:flex-wrap lg:flex-nowrap items-center justify-evenly space-x-8">
-        <nav className="flex items-center space-x-6 gap-2">
+        <nav className="flex items-center space-x-6 gap-2 z-30">
           {/* Home Dropdown */}
           <div className="relative group">
             <button className="flex items-center font-medium text-sm hover:text-blue-600 active:text-blue-800">
@@ -283,12 +283,12 @@ export default function Header() {
             </button>
           </div>
           <nav className="flex flex-col items-center py-0">
-            <Link href="#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Home</Link>
-            <Link href="#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Inventory</Link>
-            <Link href="#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Blog</Link>
-            <Link href="#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Shop</Link>
-            <Link href="#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Pages</Link>
-            <Link href="#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Contact</Link>
+            <Link href="/" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Home</Link>
+            <Link href="/srp" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Inventory</Link>
+            <Link href="/#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Blog</Link>
+            <Link href="/#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Shop</Link>
+            <Link href="/#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Pages</Link>
+            <Link href="/#" className="font-medium py-3 text-center text-sm w-full hover:bg-gray-100 active:text-blue-800">Contact</Link>
           </nav>
         </div>
       )}

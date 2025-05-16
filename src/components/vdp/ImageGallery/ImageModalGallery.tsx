@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { createPortal } from "react-dom";
 
 const ImageModal = ({
   isOpen,
@@ -21,8 +22,8 @@ const ImageModal = ({
 }: any) => {
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center" style={{ zIndex: 51 }}>
+  return createPortal(
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center" style={{ zIndex: 9999 }}>
       <div className="relative w-full max-w-4xl h-full p-4 rounded-md">
         {/* Close Button */}
         <button
@@ -105,12 +106,22 @@ const ImageModal = ({
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
-const ImageModalGallery = ({ images, children }: { images: string[]; children: React.ReactNode }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const ImageModalGallery = ({ 
+  images, 
+  children,
+  isModalOpen,
+  setIsModalOpen
+}: { 
+  images: string[]; 
+  children: React.ReactNode;
+  isModalOpen: boolean;
+  setIsModalOpen: (open: boolean) => void;
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const dragRef = useRef<any>(null);
   const mainImageDragRef = useRef<any>(null);
@@ -121,11 +132,6 @@ const ImageModalGallery = ({ images, children }: { images: string[]; children: R
   const [mainImageStartPos, setMainImageStartPos] = useState({ x: 0, y: 0 });
   const [mainImageTranslate, setMainImageTranslate] = useState({ x: 0, y: 0 });
   const DRAG_THRESHOLD = 50; 
-
-  const openModal = (index: number) => {
-    setCurrentIndex(index);
-    setIsModalOpen(true);
-  };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -231,10 +237,7 @@ const ImageModalGallery = ({ images, children }: { images: string[]; children: R
 
   return (
     <div>
-      <div
-        className="cursor-pointer"
-        onClick={() => openModal(0)}
-      >
+      <div>
         {children}
       </div>
 
@@ -243,12 +246,7 @@ const ImageModalGallery = ({ images, children }: { images: string[]; children: R
         images={images}
         currentIndex={currentIndex}
         closeModal={closeModal}
-        changeImage={(direction: "prev" | "next") => {
-          const newIndex = direction === "prev"
-            ? (currentIndex === 0 ? images.length - 1 : currentIndex - 1)
-            : (currentIndex === images.length - 1 ? 0 : currentIndex + 1);
-          updateCurrentIndex(newIndex);
-        }}
+        changeImage={updateCurrentIndex}
         setCurrentIndex={updateCurrentIndex}
         dragRef={dragRef}
         handleMouseDown={handleMouseDown}

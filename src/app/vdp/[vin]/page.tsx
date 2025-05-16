@@ -167,9 +167,7 @@ export default function VehicleDetailPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 bg-white md:rounded-[80px] z-10">
-        <div
-          className="container mx-auto w-[80%] sm:p-0 py-[20px] md:px-[80px] md:py-[65px]"
-        >
+        <div className="container mx-auto w-[80%] sm:p-0 py-[20px] md:px-[80px] md:py-[65px]">
           {/* Car Title */}
           <p className="text-lg text-green-500">{car['New/Used'] === 'N' ? 'New' : ''}</p>
           <div className="flex flex-col md:flex-row justify-between items-start">
@@ -232,8 +230,8 @@ export default function VehicleDetailPage() {
               </div>
             </div>
 
-            {/* Image Gallery */}
-            <div className="mt-4">
+            {/* Image Gallery - Back in original position but with portal */}
+            <div className="mt-4 w-full" style={{ position: 'relative', zIndex: 50 }}>
               <ImageGallery images={images} />
             </div>
 
