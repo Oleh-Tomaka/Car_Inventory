@@ -1,39 +1,16 @@
-"use client"
+import { Car } from '@/types/car';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Heart, TriangleIcon } from 'lucide-react';
+import { useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-import Image from "next/image"
-import Link from "next/link"
-import { Heart, ChevronLeft, ChevronRight, DivideCircleIcon, TriangleRight, TriangleIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRef } from "react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-
-interface Car {
-  Make: string;
-  Model: string;
-  Year: string;
-  Series: string;
-  Price: string;
-  Vehicle: string;
-  'Other Price': string;
-  'Photo Url List': string;
-  VIN: string;
-  'Dealer Name': string;
-  'Dealer City': string;
-  'Dealer Address': string;
-  Status: string;
-  Body: string;
-  'Drivetrain Desc': string;
-  Odometer: string;
-  'New/Used': string;
-  Colour: string;
-  'Interior Color': string;
-}
-
-interface CarListingProps {
-  discount: string;
-  discountType: "amount" | "percent";
-  isNew: boolean;
-  carData: Car;
+interface CarCardProps {
+  car: Car;
+  discount?: string;
+  discountType?: 'amount' | 'percent';
+  isNew?: boolean;
 }
 
 const getBasicColor = (colorName: string): string => {
@@ -61,13 +38,13 @@ const getGradientStyle = (colorName: string): React.CSSProperties => {
   return { backgroundColor: getBasicColor(colorName) };
 };
 
-export default function CarListing({ discount, discountType, isNew, carData }: CarListingProps) {
+export function CarCard({ car, discount, discountType = 'amount', isNew = false }: CarCardProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const mainImage = carData['Photo Url List']?.split('|')[0] || '/placeholder-car.png';
-
-  // Handle empty or invalid price values
-  const price = carData.Price || carData['Other Price'] || '0';
-  const otherPrice = carData['Other Price'] || carData.Price || '0';
+  const mainImage = car['Photo Url List']?.split('|')[0] || '/placeholder-car.png';
+  const price = car.Price || car['Other Price'] || '0';
+  const otherPrice = car['Other Price'] || car.Price || '0';
+  const priceDiff = parseInt(otherPrice) - parseInt(price);
+  const showDiscount = priceDiff > 0;
 
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -81,9 +58,6 @@ export default function CarListing({ discount, discountType, isNew, carData }: C
     maximumFractionDigits: 0,
   }).format(parseInt(otherPrice));
 
-  // Calculate discount
-  const priceDiff = parseInt(otherPrice) - parseInt(price);
-  const showDiscount = priceDiff > 0;
   const formattedDiscount = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -110,24 +84,23 @@ export default function CarListing({ discount, discountType, isNew, carData }: C
     }
   };
 
-  const exteriorStyle = getGradientStyle(carData.Colour || '');
-  const interiorStyle = getGradientStyle(carData['Interior Color'] || '');
+  const exteriorStyle = getGradientStyle(car.Colour || '');
+  const interiorStyle = getGradientStyle(car['Interior Color'] || '');
 
   return (
     <div className="relative mb-4">
-      {showDiscount && carData['New/Used'] === 'N' && (
+      {showDiscount && car['New/Used'] === 'N' && (
         <div className="z-10 absolute bg-[#F0344B] top-4 left-[-16px] rounded-full px-4 py-1 text-white text-sm font-bold flex items-center gap-1 pointer-events-auto">
           - {formattedDiscount}
         </div>
       )}
       <div className="border bg-white overflow-hidden" style={{ borderRadius: "18px" }}>
         <div className="relative">
-
-          <Link href={`/vdp/${carData.VIN}`}>
+          <Link href={`/vdp/${car.VIN}`}>
             <div className="relative">
               <Image
                 src={mainImage}
-                alt={`${carData.Year} ${carData.Make} ${carData.Model}`}
+                alt={`${car.Year} ${car.Make} ${car.Model}`}
                 width={400}
                 height={300}
                 className="w-full h-[220px] relative object-cover cursor-pointer hover:opacity-90 transition-opacity"
@@ -135,7 +108,7 @@ export default function CarListing({ discount, discountType, isNew, carData }: C
               <div className="absolute top-[204px] left-1/2 transform -translate-x-1/2">
                 <Image src="/images/Bullet.svg" alt="Bullet" width={134} height={4} />
               </div>
-              {showDiscount && carData['New/Used'] === 'U' && (
+              {showDiscount && car['New/Used'] === 'U' && (
                 <div className="absolute bg-[#F0344B] left-0 bottom-0 w-full px-2 py-2 text-white text-sm font-bold flex justify-center items-center gap-1">
                   <Image src="/images/fire.svg" alt="Fire" width={18} height={18} />
                   {`${shortenNumber(priceDiff)} Off MSRP OR 0% for 72 mos`}
@@ -150,18 +123,18 @@ export default function CarListing({ discount, discountType, isNew, carData }: C
 
           <div className="px-4 py-4">
             <div className="flex items-start justify-between pl-2 mb-1 h-[64px]">
-              <Link href={`/vdp/${carData.VIN}`} className="hover:underline">
-                <h3 className="font-bold text-lg line-clamp-2 pr-2">{`${carData.Vehicle}`}</h3>
+              <Link href={`/vdp/${car.VIN}`} className="hover:underline">
+                <h3 className="font-bold text-lg line-clamp-2 pr-2">{`${car.Vehicle}`}</h3>
               </Link>
               <div className="flex justify-center items-center mt-1">
-                <div className="w-5 h-5 rounded-full border border-gray-200 z-20" style={exteriorStyle} />
-                <div className="w-5 h-5 rounded-full border border-gray-200 z-10 mx-[-6px]" style={interiorStyle} />
+                <div className="w-5 h-5 rounded-full border border-gray-200 z-10" style={exteriorStyle} />
+                <div className="w-5 h-5 rounded-full border border-gray-200 z-1 mx-[-6px]" style={interiorStyle} />
               </div>
             </div>
 
             <div className="flex justify-between text-sm text-gray-500 mx-2 mb-2">
-              <span>{`${carData.Body} ${carData['Drivetrain Desc']}`}</span>
-              <span>{`${shortenNumber(parseInt(carData.Odometer))} miles`}</span>
+              <span>{`${car.Body} ${car['Drivetrain Desc']}`}</span>
+              <span>{`${shortenNumber(parseInt(car.Odometer))} miles`}</span>
             </div>
 
             <div className="relative bg-[#FBFBFB] rounded-full py-1 mb-2">
@@ -182,19 +155,19 @@ export default function CarListing({ discount, discountType, isNew, carData }: C
               >
                 <div className="flex space-x-2">
                   <div className="flex-shrink-0 px-2 py-1 bg-white rounded-full text-sm shadow-md">
-                    {carData['New/Used'] === 'N' ? 'New' : 'Used'}
+                    {car['New/Used'] === 'N' ? 'New' : 'Used'}
                   </div>
                   <div className="flex-shrink-0 px-2 py-1 bg-white rounded-full text-sm shadow-md">
-                    #{carData.VIN}
+                    #{car.VIN}
                   </div>
                   <div className="flex-shrink-0 px-2 py-1 bg-white rounded-full text-sm shadow-md">
-                    {carData.Series}
+                    {car.Series}
                   </div>
                   <div className="flex-shrink-0 px-2 py-1 bg-white rounded-full text-sm shadow-md">
-                    {carData.Body}
+                    {car.Body}
                   </div>
                   <div className="flex-shrink-0 px-2 py-1 bg-white rounded-full text-sm shadow-md">
-                    {carData['Drivetrain Desc']}
+                    {car['Drivetrain Desc']}
                   </div>
                 </div>
               </div>
@@ -341,7 +314,7 @@ export default function CarListing({ discount, discountType, isNew, carData }: C
               </TooltipProvider>
             </div>
 
-            <Link href={`/vdp/${carData.VIN}`}>
+            <Link href={`/vdp/${car.VIN}`}>
               <Button variant="outline" size="sm" className="w-full mb-2 rounded-full">
                 Confirm Availability
               </Button>
@@ -351,10 +324,10 @@ export default function CarListing({ discount, discountType, isNew, carData }: C
               Estimate My Payment
             </Button>
 
-            <div className="text-xs text-gray-500 text-center underline">{`${carData['Dealer Address']}, ${carData['Dealer City']}`}</div>
+            <div className="text-xs text-gray-500 text-center underline">{`${car['Dealer Address']}, ${car['Dealer City']}`}</div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+} 

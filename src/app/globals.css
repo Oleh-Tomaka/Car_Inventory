@@ -49,16 +49,40 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-.tooltiptext::after {
-  content: "";
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 8px;
-  border-style: solid;
-  border-color: transparent transparent #FBFBFB transparent;
-}
+  
+  input:focus-visible {
+    border: 2px solid #3b82f6; /* Tailwind's blue-500 */
+    outline: none;
+    ring: 2px solid #3b82f6; /* Tailwind's blue-500 */
+    ring-offset: 1px;
+  }
+  .no-drag {
+    user-select: none; /* Prevent text selection */
+    -webkit-user-drag: none; /* Prevent dragging on webkit browsers */
+    -moz-user-drag: none; /* Prevent dragging on Firefox */
+    -ms-user-drag: none; /* Prevent dragging on IE */
+    cursor: default; /* Change cursor */
+  }
+  
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hidden {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+  }
+ 
+  .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent transparent #FBFBFB transparent;
+  }
 
   .dark {
     --background: 0 0% 3.9%;

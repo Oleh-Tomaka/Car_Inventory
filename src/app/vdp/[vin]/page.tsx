@@ -4,54 +4,29 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Heart, ChevronLeft, ChevronRight, DivideCircleIcon, TriangleRight, TriangleIcon } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Calendar } from "@/components/ui/calendar"
-import { Share2, MapPin, Phone, Info } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import CarFeatures from "@/components/car-features"
-// import ImageGallery from "@/components/image-gallery"
-import ImageGallery from "@/components/gallery"
-import SimilarCars from "@/components/similar-cars"
-import FinancingCalculator from "@/components/financing-calculator"
-import Specifications from "@/components/specifications"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
-import ImageModalGallery from "@/components/ImageModalGallery"
+import dynamic from 'next/dynamic'
+import { Car } from '@/types/car'
+import ImageGallery  from '@/components/vdp/ImageGallery/gallery'
+import CarDetails from '@/components/vdp/details/car-details'
 
-interface Car {
-  Make: string;
-  Model: string;
-  Year: string;
-  Series: string;
-  Price: string;
-  'Other Price': string;
-  'Photo Url List': string;
-  VIN: string;
-  'Dealer Name': string;
-  'Dealer City': string;
-  'Dealer Address': string;
-  Status: string;
-  Body: string;
-  'Drivetrain Desc': string;
-  Odometer: string;
-  'New/Used': string;
-  'Fuel': string;
-  'Transmission': string;
-  'Engine': string;
-  'Certified': string;
-  'Stock #': string;
-  'City MPG': string;
-  'Highway MPG': string;
-  'Colour': string;
-  'Interior Color': string;
-  'Comments': string;
-}
+const CarFeatures = dynamic(() => import("@/components/vdp/details/car-features"), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-lg" />
+})
+const SimilarCars = dynamic(() => import("@/components/similar-cars"), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-lg" />
+})
+const FinancingCalculator = dynamic(() => import("@/components/vdp/details/financing-calculator"), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-lg" />
+})
+const Specifications = dynamic(() => import("@/components/vdp/details/specifications"), {
+  loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-lg" />
+})
 
 export default function VehicleDetailPage() {
   const params = useParams()
-  const vin = params.vin as string
   const [car, setCar] = useState<Car | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -62,7 +37,7 @@ export default function VehicleDetailPage() {
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
   };
-  const truncateText = car?.Comments.slice(0, 900) + '...';
+  const truncateText = car?.Comments?.slice(0, 900) + '...';
 
   const shortenNumber = (value: number) => {
     if (value >= 1_000_000) {
@@ -78,7 +53,7 @@ export default function VehicleDetailPage() {
     let mounted = true;
 
     const fetchCarDetails = async () => {
-      if (!vin) {
+      if (!params.vin) {
         if (mounted) {
           setError('No VIN provided')
           setLoading(false)
@@ -91,7 +66,7 @@ export default function VehicleDetailPage() {
           setLoading(true)
         }
 
-        const response = await fetch(`/api/cars/${vin}`)
+        const response = await fetch(`/api/cars/${params.vin}`)
         if (!response.ok) {
           throw new Error(response.status === 404 ? 'Car not found' : 'Failed to fetch car details')
         }
@@ -101,9 +76,8 @@ export default function VehicleDetailPage() {
 
         setCar(data)
 
-        // Only fetch similar cars if we have the car data
         if (data && data.Year) {
-          const similarResponse = await fetch(`/api/cars/similar?year=${data.Year}&vin=${vin}`)
+          const similarResponse = await fetch(`/api/cars/similar?year=${data.Year}&vin=${params.vin}`)
           if (similarResponse.ok) {
             const similarData = await similarResponse.json()
             if (mounted) {
@@ -127,7 +101,7 @@ export default function VehicleDetailPage() {
     return () => {
       mounted = false
     }
-  }, [vin]) // Only depend on vin
+  }, [params.vin])
 
   if (loading) {
     return (
@@ -194,9 +168,8 @@ export default function VehicleDetailPage() {
       <Header />
       <main className="flex-1 bg-white md:rounded-[80px] z-10">
         <div
-          className="container mx-auto w-[80%] sm:p-0 md:px-[80px] md:py-[65px]"
+          className="container mx-auto w-[80%] sm:p-0 py-[20px] md:px-[80px] md:py-[65px]"
         >
-
           {/* Car Title */}
           <p className="text-lg text-green-500">{car['New/Used'] === 'N' ? 'New' : ''}</p>
           <div className="flex flex-col md:flex-row justify-between items-start">
@@ -219,7 +192,6 @@ export default function VehicleDetailPage() {
           </div>
 
           <div>
-
             {/* Key Features */}
             <div className="flex justify-between items-center">
               <div className="flex flex-wrap gap-4">
@@ -227,7 +199,6 @@ export default function VehicleDetailPage() {
                   <Image src="/images/year.svg" alt="Year" width={16} height={16} />
                   <p className="text-sm">{car.Year}</p>
                 </div>
-
 
                 <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 gap-2">
                   <Image src="/images/mileage.svg" alt="Mileage" width={16} height={16} />
@@ -261,7 +232,6 @@ export default function VehicleDetailPage() {
               </div>
             </div>
 
-
             {/* Image Gallery */}
             <div className="mt-4">
               <ImageGallery images={images} />
@@ -289,156 +259,12 @@ export default function VehicleDetailPage() {
             </div>
           </div>
 
-
-
           <div className="flex flex-wrap lg:flex-nowrap gap-8">
             {/* Left Column - Details, Description, Features */}
             <div className="w-full lg:w-[73%]">
-              <div className="mt-8 hidden md:block">
-                <h2 className="text-xl font-bold mb-4">Details</h2>
-                <div className="flex flex-wrap justify-between gap-1">
-                  <div className="space-y-4 mb-4">
-                    <div className="flex items-center gap-6">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/stock-type.svg" alt="Stock Type" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Stock Type</p>
-                      </div>
-                      <p className="text-sm">{car['New/Used'] === 'N' ? 'New' : 'Used'}</p>
-                    </div>
+              <CarDetails car={car} />
 
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/vin.svg" alt="VIN" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">VIN</p>
-                      </div>
-                      <p className="text-sm">{car.VIN}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/vin.svg" alt="Stock" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Stock</p>
-                      </div>
-                      <p className="text-sm">{car['Stock #']}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/make.svg" alt="Make & Model" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Make & Model</p>
-                      </div>
-                      <p className="text-sm">{`${car.Make} ${car.Model}`}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/vin.svg" alt="Trim" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Trim</p>
-                      </div>
-                      <p className="text-sm">{`${car.Series}`}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/door.svg" alt="Doors" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Doors</p>
-                      </div>
-                      <p className="text-sm">{`${car.Body.split('')[0]} Door`}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/piston.svg" alt="City MPG" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">MPG City</p>
-                      </div>
-                      <p className="text-sm">{car['City MPG']}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/piston.svg" alt="Highway MPG" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">MPG Highway</p>
-                      </div>
-                      <p className="text-sm">{car['Highway MPG']}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/year.svg" alt="Year" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Year</p>
-                      </div>
-                      <p className="text-sm">{car.Year}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/mileage.svg" alt="Mileage" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Mileage</p>
-                      </div>
-                      <p className="text-sm">{new Intl.NumberFormat().format(parseInt(car.Odometer))} miles</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/fuel.svg" alt="Fuel Type" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Fuel Type</p>
-                      </div>
-                      <p className="text-sm">{car.Fuel}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/transmission.svg" alt="Transmission" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Transmission</p>
-                      </div>
-                      <p className="text-sm">{car.Transmission}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/drive-type.svg" alt="Drive Type" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Drive Type</p>
-                      </div>
-                      <p className="text-sm">{car['Drivetrain Desc']}</p>
-                    </div>
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/fill.svg" alt="Exterior Color" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Exterior Color</p>
-                      </div>
-                      <p className="text-sm">{car['Colour']}</p>
-                    </div>
-
-                    <div className="flex items-center gap-6 ">
-                      <div className="flex items-center gap-2 w-[200px]">
-                        <Image src="/images/fill.svg" alt="Interior Color" width={16} height={16} />
-                        <p className="text-sm text-muted-foreground">Interior Color</p>
-                      </div>
-                      <p className="text-sm">{car['Interior Color']}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8">
-                <h2 className="text-xl font-bold mb-4">Description</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {isExpanded ? car.Comments : truncateText}
-                </p>
-                <Button variant="link" className="mt-2 ml-auto p-0 h-auto text-md flex border-none font-medium" onClick={toggleExpanded}>
-                  {isExpanded ? '- Show Less' : '+ Show More'}
-                </Button>
-              </div>
-
-              <div className="mt-8">
-                <Button variant="outline" className="px-8 py-6 border-none rounded-[12px] text-base bg-[#FFE9F3] flex items-center gap-2">
-                  <Image src="/images/drive-type.svg" alt="Schedule Test Drive" width={22} height={22} />
-                  Schedule Test Drive
-                </Button>
-              </div>
-
+              {/* Lazy loaded sections */}
               <div className="mt-8">
                 <h2 className="text-xl font-bold mb-4 border-t border-gray-200 pt-8">Reason to love this {car.Make} {car.Series}</h2>
                 <CarFeatures />
@@ -525,7 +351,7 @@ export default function VehicleDetailPage() {
                 </Button>
               </Link>
             </div>
-            <SimilarCars vins={similarVins} currentVIN={vin} />
+            <SimilarCars vins={similarVins} currentVIN={params.vin as string} />
           </div>
         </div>
       </main>

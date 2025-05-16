@@ -4,41 +4,15 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Heart, ChevronLeft, ChevronRight, DivideCircleIcon, TriangleRight, TriangleIcon } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Heart, Share2 } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
-import { Share2, MapPin, Phone, Info } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import CarFeatures from "@/components/car-features"
-import ImageGallery from "@/components/image-gallery"
-import SimilarCars from "@/components/similar-cars"
-import FinancingCalculator from "@/components/financing-calculator"
-import Specifications from "@/components/specifications"
+import CarFeatures from "@/components/vdp/details/car-features"
+import FinancingCalculator from "@/components/vdp/details/financing-calculator"
+import Specifications from "@/components/vdp/details/specifications"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
-
-interface Car {
-  Make: string;
-  Model: string;
-  Year: string;
-  Series: string;
-  Price: string;
-  'Other Price': string;
-  'Photo Url List': string;
-  VIN: string;
-  'Dealer Name': string;
-  'Dealer City': string;
-  'Dealer Address': string;
-  Status: string;
-  Body: string;
-  'Drivetrain Desc': string;
-  Odometer: string;
-  'New/Used': string;
-  'Fuel': string;
-  'Transmission': string;
-  'Engine': string;
-  'Certified': string;
-}
+import { Car } from '@/types/car'
 
 export default function VehicleDetailPage() {
   const searchParams = useSearchParams()
@@ -74,7 +48,11 @@ export default function VehicleDetailPage() {
   }, [vin])
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Image src="/images/loading.gif" alt="Loading" width={80} height={80} />
+      </div>
+    )
   }
 
   if (error || !car) {
@@ -571,19 +549,7 @@ export default function VehicleDetailPage() {
           <div className="mt-8">
             <h2 className="text-xl font-bold mb-4">Description</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              2025 Nissan Versa 1.6 SR Scarlet Ember Tintcoat 1.6L DOHC 16V 4-Cylinder 122HP MPI FWD CVT 32/40
-              City/Highway MPG 17" Aluminum Alloy Wheels, 6 Speakers, Air Conditioning, Alloy wheels, AM/FM radio:
-              SiriusXM, Apple CarPlay/Android Auto, Auto High-beam Headlights, Automatic temperature control, Blind
-              Spot Warning, Brake assist, Bumpers: body-color, Cargo Blocks, Carpeted Floor Mats, Chrome Door
-              Handles, Chrome Trunk Accent, Driver door bin, Driver vanity mirror, Dual front impact airbags, Dual
-              front side impact airbags, Electronic Stability Control, Exterior Parking Camera, Four wheel
-              independent suspension, Fully automatic headlights, Heated door mirrors, Heated Front Bucket Seats,
-              Heated front seats, Illuminated entry, Knee airbag, Leather steering wheel, Low tire pressure warning,
-              Outside temperature display, Panic alarm, Power door mirrors, Power steering, Power windows, Radio
-              data system, Rear window defroster, Remote keyless entry, Security system, Speed control,
-              Speed-sensing steering, Split folding rear seat, Spoiler, Steering wheel mounted audio controls,
-              Tachometer, Telescoping steering wheel, Tilt steering wheel, Traction control, Trip computer, Variably
-              intermittent wipers.
+              {car.Comments}
             </p>
             <Button variant="link" className="mt-2 p-0 h-auto text-sm font-medium">
               + Show More

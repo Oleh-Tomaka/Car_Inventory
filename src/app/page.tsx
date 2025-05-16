@@ -3,36 +3,13 @@ import { Search, ChevronDown, Phone, Car } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Header from "@/components/header";
 
 export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Header */}
-      <header className="container mx-auto flex items-center justify-between py-4">
-        <div className="text-2xl font-bold">LOGO</div>
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link href="/" className="font-medium">
-            Home
-          </Link>
-          <Link href="/srp" className="font-medium">
-            Inventory
-          </Link>
-          <Link href="/blog" className="font-medium">
-            Blog
-          </Link>
-          <Link href="/shop" className="font-medium">
-            Shop
-          </Link>
-          <Link href="/contact" className="font-medium">
-            Contact
-          </Link>
-        </nav>
-        <div className="flex items-center space-x-4">
-          <Button variant="outline" className="rounded-full">
-            Call Us
-          </Button>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
@@ -49,7 +26,7 @@ export default function Home() {
                 Browse Inventory
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button size="lg" variant="outline" className="border-white text-black hover:bg-white/10">
               Sell Your Car
             </Button>
           </div>
@@ -96,7 +73,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto text-center">
-          <p className="text-gray-400">© 2024 Your Car Dealership. All rights reserved.</p>
+          <p className="text-gray-400">© 2025 Your Car Dealership. All rights reserved.</p>
         </div>
       </footer>
     </main>

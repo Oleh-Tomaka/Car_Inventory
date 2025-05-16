@@ -1,38 +1,29 @@
 'use client'
 
-import Link from "next/link"
 import Image from "next/image"
-import { Search, ChevronDown, Phone, Menu, X } from "lucide-react"
+import { ChevronDown, X } from "lucide-react"
 import { useState, useEffect } from 'react'
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import CarListing from "@/components/car-listing"
 import FilterSidebar from "@/components/filter-sidebar"
 import Pagination from "@/components/pagination"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
+import { Car } from '@/types/car'
+import { CarGrid } from '@/components/car-listing/car-grid'
+import CarSearch from '@/components/search/car-search'
 
-interface Car {
-  Make: string;
-  Model: string;
-  Year: string;
-  Series: string;
-  Price: string;
-  'Other Price': string;
-  'Photo Url List': string;
-  VIN: string;
-  'Dealer Name': string;
-  'Dealer City': string;
-  'Dealer Address': string;
-  Status: string;
-  Body: string;
-  'Drivetrain Desc': string;
-  Odometer: string;
-  'New/Used': string;
-  Vehicle: string;
-  'Interior Color': string;
-  Colour: string;
+interface Filters {
+  make: string;
+  priceMin: string;
+  priceMax: string;
+  conditions: string[];
+  years: string[];
+  models: string[];
+  bodyStyles: string[];
+  fuelTypes: string[];
+  mileageMin: number;
+  mileageMax: number;
 }
 
 export default function SearchResultsPage() {
@@ -40,25 +31,24 @@ export default function SearchResultsPage() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     make: '',
     priceMin: '',
     priceMax: '',
-    conditions: [] as string[],
-    years: [] as string[],
-    models: [] as string[],
-    bodyStyles: [] as string[],
-    fuelTypes: [] as string[],
+    conditions: [],
+    years: [],
+    models: [],
+    bodyStyles: [],
+    fuelTypes: [],
     mileageMin: 0,
     mileageMax: 100000,
   });
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar visibility for mobile
+  const ITEMS_PER_PAGE = 9;
 
-  useEffect(() => {
-    fetchCars();
-  }, [filters, currentPage]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // Fetch cars with optimized query
   const fetchCars = async () => {
     try {
       setLoading(true);
@@ -67,25 +57,25 @@ export default function SearchResultsPage() {
       // Add basic filters
       Object.entries(filters).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          // Handle array filters
           value.forEach(v => {
             queryParams.append(key, v);
           });
         } else if (value !== undefined && value !== null && value !== '') {
-          // Handle non-array filters, including numbers
           queryParams.append(key, value.toString());
         }
       });
       
       queryParams.append('page', currentPage.toString());
-      queryParams.append('limit', '9');
+      queryParams.append('limit', ITEMS_PER_PAGE.toString());
+      // Add fields parameter to only fetch necessary data
+      queryParams.append('fields', 'VIN,Vehicle,Photo Url List,Price,Year,Make,Model');
 
       const response = await fetch(`/api/cars?${queryParams.toString()}`);
       const data = await response.json();
 
       if (data.success) {
         setCars(data.data);
-        setTotalPages(Math.ceil(data.total / 9));
+        setTotalPages(Math.ceil(data.total / ITEMS_PER_PAGE));
       } else {
         console.error('Failed to fetch cars:', data.error);
       }
@@ -96,13 +86,15 @@ export default function SearchResultsPage() {
     }
   };
 
-  const handleFilterChange = (newFilters: typeof filters) => {
-    setFilters(newFilters);
-    setCurrentPage(1); // Reset to first page when filters change
-  };
+  // Fetch cars when page or filters change
+  useEffect(() => {
+    fetchCars();
+  }, [filters, currentPage]);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  // Reset to first page when filters change
+  const handleFilterChange = (newFilters: Filters) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
   };
 
   // Toggle the sidebar for mobile
@@ -135,7 +127,7 @@ export default function SearchResultsPage() {
 
             {/* Sidebar Filters */}
             <div className="hidden md:block">
-            <FilterSidebar onFilterChange={handleFilterChange} />
+              <FilterSidebar onFilterChange={handleFilterChange} />
             </div>
 
             {/* Car Listings */}
@@ -151,15 +143,8 @@ export default function SearchResultsPage() {
               </div>
               <div className="mb-4">
                 <div className="relative mb-2">
-                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2" />
-                  <Input 
-                    className="pl-10 pr-4 w-full rounded-[17px] border bg-white focus-visible:border-0.5 focus-visible:border-blue-500 
-                    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0" 
-                    placeholder="Search Cars eg. Audi Q7" 
-                  />    
+                  <CarSearch />
                 </div>
-
-                
 
                 <div className="flex flex-wrap items-center md:justify-between justify-evenly gap-4 mt-4">
                   <div className="md:hidden">
@@ -182,35 +167,18 @@ export default function SearchResultsPage() {
                 </div>
               </div>
 
-              {loading ? (
-                <div className="text-center py-8">Loading...</div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-6">
-                    {cars.map((car) => {
-                      const price = car.Price || car['Other Price'] || '0';
-                      const otherPrice = car['Other Price'] || car.Price || '0';
-                      const priceDiff = parseInt(otherPrice) - parseInt(price);
-                      const showDiscount = priceDiff > 0;
-                      
-                      return (
-                        <CarListing
-                          key={car.VIN}
-                          discount={showDiscount ? priceDiff.toString() : "0"}
-                          discountType={car['New/Used'] === 'N' ? "amount" : "percent"}
-                          isNew={car['New/Used'] === 'N'}
-                          carData={car}
-                        />
-                      );
-                    })}
-                  </div>
-                  <Pagination 
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                  />
-                </>
-              )}
+              <CarGrid cars={cars} loading={loading} />
+
+              {/* Pagination */}
+              <div className="mt-8 flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => {
+                    setCurrentPage(page);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </section>

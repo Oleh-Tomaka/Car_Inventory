@@ -1,26 +1,106 @@
 import Image from "next/image"
-import { Heart, Share2, Eye, ChevronRight, ChevronLeft, Bookmark, TriangleIcon } from "lucide-react"
+import { ChevronRight, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
+import { Car } from "@/types/car"
 
-interface Car {
-  VIN: string
-  Year: string
-  Make: string
-  Model: string
-  Body: string
-  'Drivetrain Desc': string
-  'New/Used': 'N' | 'U'
-  Vehicle: string
-  MSRP: string
-  'After Rebates': string
-  'Photo Url List': string
-  Price: string
-  'Other Price': string
-  'Price Diff': number
+interface SimilarCarCardProps {
+  car: Car
 }
+
+const SimilarCarCard = ({ car }: SimilarCarCardProps) => {
+  const price = car.Price || car['Other Price'] || '0';
+  const otherPrice = car['Other Price'] || car.Price || '0';
+  
+  const formattedPrice = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(parseInt(price));
+
+  const formattedOtherPrice = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(parseInt(otherPrice));
+
+  const mainImage = car['Photo Url List']?.split('|')[0] || '/placeholder-car.png';
+  const priceDiff = parseInt(otherPrice) - parseInt(price);
+
+  return (
+    <div className="relative mb-4">
+      <div className="border bg-white overflow-hidden" style={{ borderRadius: "18px" }}>
+        <div className="relative">
+          <Link href={`/vdp/${car.VIN}`}>
+            <Image
+              src={mainImage}
+              alt={`${car.Year} ${car.Make} ${car.Model}`}
+              width={400}
+              height={300}
+              className="w-full h-[220px] object-cover cursor-pointer hover:opacity-90 transition-opacity"
+            />
+          </Link>
+
+          {parseInt(car.Odometer) < 5000 && (
+              <div className="absolute top-4 left-3">
+                <div className="rounded-full px-3 py-1 text-sm font-bold bg-gray-800 text-white">
+                  Low Mileage
+                </div>
+              </div>
+          )}
+  
+          <div className="absolute top-4 right-3 bg-white rounded-full p-3">
+            <Image src="/images/bookmark.svg" alt="Save" width={12} height={12} />
+          </div>
+  
+          <div className="px-4 py-4">
+            <div className="flex items-start justify-between pl-2 mb-1 h-[64px]">
+              <Link href={`/vdp/${car.VIN}`} className="hover:underline">
+                <h3 className="font-bold text-lg line-clamp-2 pr-2">{car.Vehicle}</h3>
+              </Link>
+            </div>
+  
+            <div className="flex justify-between text-sm text-gray-500 mx-2 mb-2">
+              <span>{`${car.Body} ${car['Drivetrain Desc']}`}</span>
+            </div>
+  
+            <div className="flex justify-between items-center border-t border-b p-2 mx-2 mb-1">
+              <div className="flex justify-around w-full">
+                <button>
+                  <Image src="/images/android.svg" alt="Android" width={26} height={26} />
+                </button>
+                <button>
+                  <Image src="/images/vector.svg" alt="Apple" width={20} height={20} />
+                </button>
+                <button>
+                  <Image src="/images/group.svg" alt="Wheel" width={26} height={26} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center p-2 mx-2 mb-2">
+              <div className="flex justify-between w-full mr-4">
+                <p>MSRP</p>
+                <p className="line-through">{formattedOtherPrice}</p>
+              </div>
+              <div className="flex justify-between items-end w-full mr-4">
+                <p className="font-bold">After all rebates</p>
+                <p className="font-bold text-lg">{formattedPrice}</p>
+              </div>
+            </div>
+            <Link href={`/vdp/${car.VIN}`}>
+              <Button variant="outline" size="sm" className="w-full mb-1 rounded-full">
+                More Details
+                <Image src="/images/right-up.svg" alt="Right up" width={14} height={14} />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface SimilarCarsProps {
   vins: string[]  // Array of VINs for similar cars (already filtered by year and excluding current car)
@@ -95,10 +175,6 @@ export default function SimilarCars({ vins, currentVIN, itemsPerPage = 4 }: Simi
     }
   }
 
-  const shortenNumber = (num: number) => {
-    return num.toLocaleString()
-  }
-
   if (error) {
     return (
       <div className="text-center py-8">
@@ -112,7 +188,6 @@ export default function SimilarCars({ vins, currentVIN, itemsPerPage = 4 }: Simi
 
   if (loading) {
     return (
-      // <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-6">  
         {[...Array(itemsPerPage)].map((_, index) => (
           <div key={index} className="animate-pulse">
@@ -139,109 +214,9 @@ export default function SimilarCars({ vins, currentVIN, itemsPerPage = 4 }: Simi
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">  
-        {cars.map((car) => {
-          const price = car.Price || car['Other Price'] || '0';
-          const otherPrice = car['Other Price'] || car.Price || '0';
-          
-          const formattedPrice = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0,
-          }).format(parseInt(price));
-
-          const formattedOtherPrice = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0,
-          }).format(parseInt(otherPrice));
-
-          const mainImage = car['Photo Url List']?.split('|')[0] || '/placeholder-car.png';
-
-          return (
-            <div className="relative mb-4" key={car.VIN}>
-              {car['New/Used'] === 'N' && car['Price Diff'] > 0 && (
-                <div className="z-10 absolute bg-[#F0344B] top-4 left-[-16px] rounded-full px-4 py-1 text-white text-sm font-bold flex items-center gap-1 pointer-events-auto">
-                  - ${shortenNumber(car['Price Diff'])}
-                </div>
-              )}
-              <div className="border bg-white overflow-hidden" style={{ borderRadius: "18px" }}>
-                <div className="relative">
-                  <Link href={`/vdp/${car.VIN}`}>
-                    <Image
-                      src={mainImage}
-                      alt={`${car.Year} ${car.Make} ${car.Model}`}
-                      width={400}
-                      height={300}
-                      className="w-full h-[220px] object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                    />
-                  </Link>
-
-                  <div className="absolute top-4 left-3">
-                    <div className="rounded-full px-3 py-1 text-sm font-bold bg-gray-800 text-white">
-                      Low Mileage
-                    </div>
-                  </div>
-                  <div className="absolute top-4 right-3 bg-white rounded-full p-3">
-                    <Image src="/images/bookmark.svg" alt="Save" width={12} height={12} />
-                  </div>
-                  {/* <div className="absolute top-3 right-3 bg-white rounded-full p-3">
-                    <Bookmark className="w-4 h-4" />
-                  </div> */}
-          
-                  {car['New/Used'] === 'U' && car['Price Diff'] > 0 && (
-                    <div className="absolute bg-[#F0344B] top-0 left-[-2px] px-2 py-2 text-white text-sm font-bold flex items-center gap-1">
-                      <Image src="/images/fire.svg" alt="Fire" width={18} height={18} />
-                      {`${shortenNumber(car['Price Diff'])} Off MSRP OR 0% for 72 mos`}
-                    </div>
-                  )}
-          
-                  <div className="px-4 py-4">
-                    <div className="flex items-start justify-between pl-2 mb-1 h-[64px]">
-                      <Link href={`/vdp/${car.VIN}`} className="hover:underline">
-                        <h3 className="font-bold text-lg line-clamp-2 pr-2">{car.Vehicle}</h3>
-                      </Link>
-                    </div>
-          
-                    <div className="flex justify-between text-sm text-gray-500 mx-2 mb-2">
-                      <span>{`${car.Body} ${car['Drivetrain Desc']}`}</span>
-                    </div>
-          
-                    <div className="flex justify-between items-center border-t border-b p-2 mx-2 mb-1">
-                      <div className="flex justify-around w-full">
-                        <button>
-                          <Image src="/images/android.svg" alt="Android" width={26} height={26} />
-                        </button>
-                        <button>
-                          <Image src="/images/vector.svg" alt="Apple" width={20} height={20} />
-                        </button>
-                        <button>
-                          <Image src="/images/group.svg" alt="Wheel" width={26} height={26} />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-center p-2 mx-2 mb-2">
-                      <div className="flex justify-between w-full mr-4">
-                        <p>MSRP</p>
-                        <p className="line-through">{formattedOtherPrice}</p>
-                      </div>
-                      <div className="flex justify-between items-end w-full mr-4">
-                        <p className="font-bold">After all rebates</p>
-                        <p className="font-bold text-lg">{formattedPrice}</p>
-                      </div>
-                    </div>
-                    <Link href={`/vdp/${car.VIN}`}>
-                      <Button variant="outline" size="sm" className="w-full mb-1 rounded-full">
-                        More Details
-                        <Image src="/images/right-up.svg" alt="Right up" width={14} height={14} />
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        })}
+        {cars.map((car) => (
+          <SimilarCarCard key={car.VIN} car={car} />
+        ))}
       </div>
       {totalPages > 1 && (
         <div className="flex md:justify-start justify-center items-center mt-8 mb-8">

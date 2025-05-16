@@ -4,8 +4,12 @@ import { ChevronDown, EyeIcon, X } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { Slider } from "@/components/ui/slider"
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface FilterChip {
   id: string
@@ -97,7 +101,6 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
     const newCheckedFilters = { ...checkedFilters, [id]: checked };
     setCheckedFilters(newCheckedFilters);
 
-    // Update filters based on the type
     const updatedFilters = { ...filters };
     
     switch (type) {
@@ -198,7 +201,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
     if (color.includes('silver')) return '#C0C0C0';
     if (color.includes('green')) return '#008000';
     if (color.includes('brown')) return '#8B4513';
-    return '#808080'; // default gray for unknown colors
+    return '#808080';
   };
 
   const getGradientStyle = (colorName: string): React.CSSProperties => {
@@ -251,7 +254,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
 
     const sliderRect = sliderRef.current.getBoundingClientRect();
     const position = Math.max(0, Math.min(1, (e.clientX - sliderRect.left) / sliderRect.width));
-    const value = Math.round(position * 200000 / 1000) * 1000; // Round to nearest 1000
+    const value = Math.round(position * 200000 / 1000) * 1000;
 
     if (isDragging === 'min') {
       const newMin = Math.min(value, mileageRange[1] - 1000);
@@ -280,75 +283,73 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
   return (
     <div className="w-full lg:w-64 md:border rounded-[16px] border-gray-200 p-2">
       <div className="flex justify-evenly items-center my-1 gap-3">
+        <button className="text-sm flex items-center gap-3"
+          onClick={() => {
+            setFilters({
+              make: '',
+              priceMin: '',
+              priceMax: '',
+              conditions: [],
+              years: [],
+              models: [],
+              bodyStyles: [],
+              fuelTypes: [],
+              drivetrains: [],
+              transmissions: [],
+              engines: [],
+              showInTransit: false,
+              exteriorColors: [],
+              interiorColors: [],
+              mileageMin: 0,
+              mileageMax: 200000,
+            });
+            setCheckedFilters({
+              new: false,
+              'pre-owned': false,
+              certified: false,
+              ...Object.fromEntries(
+                Object.keys(checkedFilters)
+                  .filter(key => !['new', 'pre-owned', 'certified'].includes(key))
+                  .map(key => [key, false])
+              )
+            });
+            setMileageRange([0, 200000]);
+            onFilterChange({
+              make: '',
+              priceMin: '',
+              priceMax: '',
+              conditions: [],
+              years: [],
+              models: [],
+              bodyStyles: [],
+              fuelTypes: [],
+              drivetrains: [],
+              transmissions: [],
+              engines: [],
+              showInTransit: false,
+              exteriorColors: [],
+              interiorColors: [],
+              mileageMin: 0,
+              mileageMax: 200000,
+            });
+          }}
+        >
+          <Image src="/images/refresh.svg" alt="Refresh Filter" width={16} height={16} />
+          Reset Filter
+        </button>
+        {isVisible ? (
           <button className="text-sm flex items-center gap-3"
-            onClick={() => {
-              setFilters({
-                make: '',
-                priceMin: '',
-                priceMax: '',
-                conditions: [],
-                years: [],
-                models: [],
-                bodyStyles: [],
-                fuelTypes: [],
-                drivetrains: [],
-                transmissions: [],
-                engines: [],
-                showInTransit: false,
-                exteriorColors: [],
-                interiorColors: [],
-                mileageMin: 0,
-                mileageMax: 200000,
-              });
-              // Reset all checked filters
-              setCheckedFilters({
-                new: false,
-                'pre-owned': false,
-                certified: false,
-                ...Object.fromEntries(
-                  Object.keys(checkedFilters)
-                    .filter(key => !['new', 'pre-owned', 'certified'].includes(key))
-                    .map(key => [key, false])
-                )
-              });
-              // Reset mileage range
-              setMileageRange([0, 200000]);
-              onFilterChange({
-                make: '',
-                priceMin: '',
-                priceMax: '',
-                conditions: [],
-                years: [],
-                models: [],
-                bodyStyles: [],
-                fuelTypes: [],
-                drivetrains: [],
-                transmissions: [],
-                engines: [],
-                showInTransit: false,
-                exteriorColors: [],
-                interiorColors: [],
-                mileageMin: 0,
-                mileageMax: 200000,
-              });
-            }}
-          >
-            <Image src="/images/refresh.svg" alt="Refresh Filter" width={16} height={16} />
-            Reset Filter
+            onClick={() => setIsVisible(false)} >
+            <Image src="/images/hidden.svg" alt="Hide Filter" width={16} height={16} />
+            Hide Filter
           </button>
-          {isVisible ? (
-            <button className="text-sm flex items-center gap-3"
-              onClick={() => setIsVisible(false)} >
-              <Image src="/images/hidden.svg" alt="Hide Filter" width={16} height={16} />
-              Hide Filter
-            </button>
-          ) : (
-            <button className="text-sm flex items-center gap-3"
-              onClick={() => setIsVisible(true)} >
-              <EyeIcon width={20} height={20} strokeWidth={1} />
-              Show Filter
-            </button>
-          )}
+        ) : (
+          <button className="text-sm flex items-center gap-3"
+            onClick={() => setIsVisible(true)} >
+            <EyeIcon width={20} height={20} strokeWidth={1} />
+            Show Filter
+          </button>
+        )}
       </div>
       
       {isVisible && (
@@ -373,6 +374,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             </div>
           )}
 
+          {/* Condition Section */}
           <div>
             <div className="flex items-center justify-between mb-2 mt-4">
               <h3 className="font-medium">Condition</h3>
@@ -422,6 +424,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             </div>
           </div>
 
+          {/* Show In Transit Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <h3 className="font-medium">Show In Transit</h3>
@@ -435,6 +438,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             </div>
           </div>
 
+          {/* Year Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -465,6 +469,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Make Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -495,6 +500,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Model Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -525,6 +531,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Body Style Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -571,6 +578,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Fuel Type Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -601,6 +609,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Exterior Color Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -627,6 +636,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Interior Color Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -653,6 +663,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Drivetrain Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -683,6 +694,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Transmission Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -713,6 +725,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Engine Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -743,16 +756,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
-          <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
-            <div 
-              className="flex items-center justify-between mb-2 cursor-pointer"
-              onClick={() => toggleSection('dealer')}
-            >
-              <h3 className="font-medium">Dealer</h3>
-              <ChevronDown className={`h-4 w-4 transition-transform ${expandedSections.dealer ? 'rotate-180' : ''}`} />
-            </div>
-          </div>
-
+          {/* Mileage Section */}
           <div className="relative -mx-4 mt-4 px-4 pt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -802,6 +806,7 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             )}
           </div>
 
+          {/* Key Features Section */}
           <div className="relative -mx-4 px-4 pt-4 mt-4 border-t border-gray-200">
             <div 
               className="flex items-center justify-between mb-2 cursor-pointer"
@@ -815,37 +820,37 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
                 <div className="flex items-center space-x-2">
                   <Checkbox id="bluetooth" />
                   <Label htmlFor="bluetooth" className="text-sm">
-                    Bluetooth (3494)
+                    Bluetooth (344)
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox id="keyless" />
                   <Label htmlFor="keyless" className="text-sm">
-                    Keyless Start (1440)
+                    Keyless Start (140)
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox id="navigation" />
                   <Label htmlFor="navigation" className="text-sm">
-                    Navigation System (5456)
+                    Navigation System (56)
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox id="active-head" />
                   <Label htmlFor="active-head" className="text-sm">
-                    Active Head Restraints (1340)
+                    Active Head Restraints (130)
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox id="brake-assist" />
                   <Label htmlFor="brake-assist" className="text-sm">
-                    Brake Assist (1566)
+                    Brake Assist (156)
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox id="parking-assist" />
                   <Label htmlFor="parking-assist" className="text-sm">
-                    Parking Assist Systems (1340)
+                    Parking Assist Systems (140)
                   </Label>
                 </div>
               </div>
@@ -856,4 +861,4 @@ export default function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
       )}
     </div>
   )
-}
+} 
