@@ -15,7 +15,7 @@ export default function CarFeatures() {
         <ul className="space-y-3">
           {features.interior.map((feature, index) => (
             <li key={index} className="flex items-center gap-2 text-sm">
-              <Check className="h-4 w-4 text-primary" />
+              <Check className="h-4 w-4 p-1 text-blue-600 rounded-full bg-blue-50" style={{ strokeWidth: '4px' }} />
               {feature}
             </li>
           ))}
@@ -26,7 +26,7 @@ export default function CarFeatures() {
         <ul className="space-y-3">
           {features.exterior.map((feature, index) => (
             <li key={index} className="flex items-center gap-2 text-sm">
-              <Check className="h-4 w-4 text-primary" />
+              <Check className="h-4 w-4 p-1 text-blue-600 rounded-full bg-blue-50" style={{ strokeWidth: '4px' }} />
               {feature}
             </li>
           ))}
@@ -37,7 +37,7 @@ export default function CarFeatures() {
         <ul className="space-y-3">
           {features.safety.map((feature, index) => (
             <li key={index} className="flex items-center gap-2 text-sm">
-              <Check className="h-4 w-4 text-primary" />
+              <Check className="h-4 w-4 p-1 text-blue-600 rounded-full bg-blue-50" style={{ strokeWidth: '4px' }} />
               {feature}
             </li>
           ))}
@@ -48,7 +48,7 @@ export default function CarFeatures() {
         <ul className="space-y-3">
           {features.comfort.map((feature, index) => (
             <li key={index} className="flex items-center gap-2 text-sm">
-              <Check className="h-4 w-4 text-primary" />
+              <Check className="h-4 w-4 p-1 text-blue-600 rounded-full bg-blue-50" style={{ strokeWidth: '4px' }} />
               {feature}
             </li>
           ))}

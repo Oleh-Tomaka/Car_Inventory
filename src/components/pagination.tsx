@@ -57,7 +57,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
 
   return (
     <div className="flex justify-center items-center mt-8 mb-4">
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1">
         <button 
           className="px-6 py-2 mr-6 border border-gray-400 hover:bg-gray-400 hover:text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => onPageChange(currentPage - 1)}

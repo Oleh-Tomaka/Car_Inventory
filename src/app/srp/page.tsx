@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
 import Link from "next/link"
 import Image from "next/image"
-import { Search, ChevronDown, Phone } from "lucide-react"
+import { Search, ChevronDown, Phone, Menu, X } from "lucide-react"
 import { useState, useEffect } from 'react'
 
 import { Button } from "@/components/ui/button"
@@ -30,6 +30,9 @@ interface Car {
   'Drivetrain Desc': string;
   Odometer: string;
   'New/Used': string;
+  Vehicle: string;
+  'Interior Color': string;
+  Colour: string;
 }
 
 export default function SearchResultsPage() {
@@ -46,7 +49,11 @@ export default function SearchResultsPage() {
     models: [] as string[],
     bodyStyles: [] as string[],
     fuelTypes: [] as string[],
+    mileageMin: 0,
+    mileageMax: 100000,
   });
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar visibility for mobile
 
   useEffect(() => {
     fetchCars();
@@ -64,8 +71,9 @@ export default function SearchResultsPage() {
           value.forEach(v => {
             queryParams.append(key, v);
           });
-        } else if (value && typeof value === 'string') {
-          queryParams.append(key, value);
+        } else if (value !== undefined && value !== null && value !== '') {
+          // Handle non-array filters, including numbers
+          queryParams.append(key, value.toString());
         }
       });
       
@@ -97,43 +105,42 @@ export default function SearchResultsPage() {
     setCurrentPage(page);
   };
 
+  // Toggle the sidebar for mobile
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="min-h-screen bg-gray-50" style={{borderRadius: "80px"}}>
-        <section className="bg-blue-700 text-white py-8">
+      <main className="min-h-screen bg-gray-50 z-10 md:rounded-[80px]">
+        <section className="bg-[#2B5297] text-white py-8">
           <div className="container mx-auto flex flex-col md:flex-row items-center justify-evenly">
-            <div className="mb-4 md:mb-0">
+            <div className="mb-2 md:mb-0">
               <h1 className="text-2xl md:text-3xl font-bold">
                 We Want to
                 <br />
                 Buy Your Car!
               </h1>
             </div>
-            <Button className="bg-yellow-400 px-10 hover:bg-yellow-500 text-black font-bold">View My Offer</Button>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <div className="bg-white rounded-full p-2 mr-2">
-                  <Phone className="h-4 w-4 text-blue-700" />
-                </div>
-                <div className="text-sm">
-                  <p>Request Our</p>
-                  <p className="font-bold">Instant Cash Offer</p>
-                </div>
-              </div>
-            </div>
+            <Button className="bg-yellow-500 px-10 my-6 hover:bg-yellow-400 text-black font-bold">View My Offer</Button>
+            <Image src="/images/offer-logo.svg" alt="Offer Logo" width={270} height={60} />
           </div>
         </section>
 
         {/* Main Content */}
         <section className="container mx-auto p-10">
-          <div className="flex flex-col lg:flex-row gap-8" style={{padding: "0 100px"}}>
+          <div className="flex flex-col lg:flex-row gap-8 py-0 px-0 md:px-[40px]">
+            
+
             {/* Sidebar Filters */}
+            <div className="hidden md:block">
             <FilterSidebar onFilterChange={handleFilterChange} />
+            </div>
 
             {/* Car Listings */}
             <div className="flex-1 p-2 rounded-lg">
-              <div className="flex justify-between items-center mb-6">
+              <div className="hidden md:flex justify-between items-end mb-6">
                 <h2 className="text-4xl font-bold">New Cars in Portland</h2>
                 <div className="flex items-center">
                   <span className="mr-2 text-sm text-gray-500">Sort by:</span>
@@ -142,20 +149,36 @@ export default function SearchResultsPage() {
                   </button>
                 </div>
               </div>
-              <div className="mb-6">
+              <div className="mb-4">
                 <div className="relative mb-2">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-                  <Input className="pl-10 pr-4 w-full rounded-full bg-gray-100" placeholder="Search Cars eg. Audi Q7" />
+                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2" />
+                  <Input 
+                    className="pl-10 pr-4 w-full rounded-[17px] border bg-white focus-visible:border-0.5 focus-visible:border-blue-500 
+                    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:ring-offset-0" 
+                    placeholder="Search Cars eg. Audi Q7" 
+                  />    
                 </div>
 
-                <div className="flex flex-wrap items-center bg-[#FBFBFB] rounded-full gap-2 text-sm text-gray-500 mt-2">
-                  <Image src="/images/Trending.png" alt="Trending Searches" width={275} height={35} />
-                  <button className="px-7 py-1.5 border rounded-full">SUV</button>
-                  <button className="px-7 py-1.5 border rounded-full">Electric</button>
-                  <button className="px-7 py-1.5 border rounded-full">Truck</button>
-                  <button className="px-7 py-1.5 border rounded-full">FWD</button>
-                  <button className="px-7 py-1.5 border rounded-full">2025 Models</button>
-                  <button className="px-7 py-1.5 border rounded-full">Hybrid</button>
+                
+
+                <div className="flex flex-wrap items-center md:justify-between justify-evenly gap-4 mt-4">
+                  <div className="md:hidden">
+                    <button onClick={toggleSidebar} className="font-medium text-lg flex items-center gap-2 rounded-lg py-3">
+                      <Image src="/images/filter.svg" alt="Filter Icon" width={32} height={32} />
+                      Filter
+                    </button>
+                  </div>
+                  <div className="rounded-full bg-gray-100 p-1">
+                    <Image src="/images/Trending.svg" alt="Trending Searches" width={200} height={35} />
+                  </div>
+                  <div className="flex flex-wrap items-center bg-[#FBFBFB] rounded-full gap-2 text-sm text-gray-500">
+                    <button className="px-7 py-1.5 border rounded-full">SUV</button>
+                    <button className="px-7 py-1.5 border rounded-full">Electric</button>
+                    <button className="px-7 py-1.5 border rounded-full">Truck</button>
+                    <button className="px-7 py-1.5 border rounded-full">FWD</button>
+                    <button className="px-7 py-1.5 border rounded-full">2025 Models</button>
+                    <button className="px-7 py-1.5 border rounded-full">Hybrid</button>
+                  </div>
                 </div>
               </div>
 
@@ -163,7 +186,7 @@ export default function SearchResultsPage() {
                 <div className="text-center py-8">Loading...</div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-6">
                     {cars.map((car) => {
                       const price = car.Price || car['Other Price'] || '0';
                       const otherPrice = car['Other Price'] || car.Price || '0';
@@ -192,7 +215,36 @@ export default function SearchResultsPage() {
           </div>
         </section>
       </main>
-      <Footer />
+
+      {/* Mobile Sidebar (Filter) */}
+      <div 
+        className={`fixed inset-0 bg-white z-50 w-[280px] md:hidden transition-transform duration-300 ${isSidebarOpen ? 'transform-none' : 'transform -translate-x-full'}`}
+      >
+        <div className="flex flex-col h-full">
+          <div className="flex justify-between items-center p-4 bg-white border-b">
+            <div className="text-xl font-bold">Filters</div>
+            <button onClick={toggleSidebar} className="text-xl">
+              <X />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <FilterSidebar onFilterChange={handleFilterChange} />
+          </div>
+        </div>
+      </div>
+
+      {/* Overlay when sidebar is open */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+
+      {/* Prevent main content scrolling when sidebar is open */}
+      <div className={`${isSidebarOpen ? 'overflow-hidden' : ''}`}>
+        <Footer />
+      </div>
     </div>
   );
-} 
+}

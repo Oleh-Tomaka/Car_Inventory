@@ -18,15 +18,32 @@ export async function GET(request: Request) {
     const priceMin = searchParams.get('priceMin');
     const priceMax = searchParams.get('priceMax');
     const conditions = searchParams.getAll('conditions');
+    const mileageMin = searchParams.get('mileageMin');
+    const mileageMax = searchParams.get('mileageMax');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '9');
 
     // Read and parse CSV file
     const filePath = path.join(process.cwd(), 'public', 'data.csv');
+    
+    if (!fs.existsSync(filePath)) {
+      console.error('CSV file not found at:', filePath);
+      return NextResponse.json(
+        { success: false, error: 'Data file not found' },
+        { status: 404 }
+      );
+    }
+
     const fileContent = fs.readFileSync(filePath, 'utf-8');
+
+    // Parse CSV with relaxed options to handle malformed quotes
     const records = parse(fileContent, {
       columns: true,
-      skip_empty_lines: true
+      skip_empty_lines: true,
+      relax_quotes: true,
+      relax_column_count: true,
+      trim: true,
+      skip_records_with_empty_values: true
     });
 
     // Helper function to get top N most frequent items
@@ -94,6 +111,8 @@ export async function GET(request: Request) {
       if (showInTransit && !record['Tags']?.includes('In-Transit')) return false;
       if (priceMin && parseInt(record.Price) < parseInt(priceMin)) return false;
       if (priceMax && parseInt(record.Price) > parseInt(priceMax)) return false;
+      if (mileageMin && parseInt(record.Odometer) < parseInt(mileageMin)) return false;
+      if (mileageMax && parseInt(record.Odometer) > parseInt(mileageMax)) return false;
       
       // Apply condition filters
       if (conditions.length > 0) {
@@ -123,9 +142,9 @@ export async function GET(request: Request) {
       filterCounts
     });
   } catch (error) {
-    console.error('Error processing request:', error);
+    console.error('Detailed error in API:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to process request' },
+      { success: false, error: error instanceof Error ? error.message : 'Failed to process request' },
       { status: 500 }
     );
   }
